@@ -67,7 +67,7 @@ function App() {
             </div>
             <div className="signature-line">
               <span>{t("footer.adapted-by")} ขิงว่านะ</span>
-              <a target="_blank" href="https://github.com/kssir/btcretirementcalc-th">
+              <a target="_blank" href="https://github.com/Khing021/btcretirementcalc-th">
                 <GithubOutlined className="github-logo" />
               </a>
             </div>

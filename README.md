@@ -17,7 +17,7 @@
 
 ## 🛠 วิธีการรัน
 โปรเจกต์นี้ใช้ Vite และ pnpm
-1. Clone โปรเจกต์: `git clone https://github.com/kssir/btcretirementcalc-th.git`
+1. Clone โปรเจกต์: `git clone https://github.com/Khing021/btcretirementcalc-th.git`
 2. ติดตั้ง dependencies: `pnpm install`
 3. รันเพื่อทดสอบ: `pnpm run dev`
 
@@ -55,7 +55,7 @@ This project was developed in the spirit of **"Vibe Coding"** — focusing on ra
 
 ## 🛠 How to run
 This project uses Vite and pnpm.
-1. Clone: `git clone https://github.com/kssir/btcretirementcalc-th.git`
+1. Clone: `git clone https://github.com/Khing021/btcretirementcalc-th.git`
 2. Install: `pnpm install`
 3. Run: `pnpm run dev`
 
