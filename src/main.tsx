@@ -5,7 +5,7 @@ import AxiosApiInterceptor from "./services/axios-interceptor.tsx";
 import i18next, { resources } from "./locales/i18n.tsx";
 import LanguageDetector from "i18next-browser-languagedetector";
 import { initReactI18next } from "react-i18next";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createHashRouter, RouterProvider } from "react-router-dom";
 
 i18next
   .use(initReactI18next)
@@ -19,7 +19,7 @@ i18next
     },
   });
 
-const router = createBrowserRouter([
+const router = createHashRouter([
   {
     path: "/",
     element: <App />,
