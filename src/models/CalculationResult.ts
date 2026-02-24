@@ -1,23 +1,28 @@
 export interface CalculationResult {
-  annualRetirementBudgetAtRetirementAge?: number;
+  monthlyRetirementBudgetAtRetirementAge?: number;
   startingBitcoinPrice: number;
-  dataSet: AnnualTrackingData[];
+  dataSet: MonthlyTrackingData[];
   retirementAge: number;
   savingsBitcoin: number;
   savingsFiat: number;
   bitcoinPriceAtRetirementAge: number;
-  annualRetirementBudget: number;
+  retirementMonth?: number;
+  retirementYear?: number;
+  monthlyRetirementBudget: number;
+  monthlyRetirementBudgetAtEnd?: number;
   optimized: boolean;
   canRetire: boolean;
 }
 
-export interface AnnualTrackingData {
-  key: number;
+export interface MonthlyTrackingData {
+  key: string;
   year: number;
+  month: number;
   age: number;
   savingsBitcoin: number;
   savingsFiat: number;
   bitcoinFlow: number;
   bitcoinPrice: number;
-  annualRetirementBudget: number;
+  monthlyRetirementBudget: number;
+  monthlyBuyFiat: number;
 }

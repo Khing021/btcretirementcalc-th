@@ -10,10 +10,10 @@ const AnnualBudgetExplanation = () => {
       zIndex={2000}
       content={
         <div className="explanatory-overlay">
-          <div>{t("annual-budget.explanation.text")}</div>
+          <div>{t("end-life-budget-explanation.text")}</div>
         </div>
       }
-      title={t("annual-budget-explanation.title")}
+      title={t("end-life-budget-explanation.title")}
       trigger="click"
     >
       <QuestionCircleTwoTone data-tooltip-id="annual-budget-tooltip" twoToneColor={BITCOIN_COLOR} />

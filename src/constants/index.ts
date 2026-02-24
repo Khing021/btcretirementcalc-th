@@ -1,12 +1,13 @@
-export const BITCOIN_SIGN: string = "₿";
+export const BITCOIN_SIGN: string = "BTC";
 export const BITCOIN_COLOR: string = "#F6931A";
-export const toUsd = (number: number) => {
-  return number.toLocaleString("en-US", {
+export const toThb = (number: number) => {
+  return number.toLocaleString("th-TH", {
     style: "currency",
-    currency: "USD",
+    currency: "THB",
+    currencyDisplay: "code",
   });
 };
 
 export const toBtc = (number: number) => {
-  return `${BITCOIN_SIGN}${number.toFixed(8)}`;
+  return `${number.toFixed(8)} ${BITCOIN_SIGN}`;
 };

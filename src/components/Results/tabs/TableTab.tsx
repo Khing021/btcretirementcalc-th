@@ -8,8 +8,8 @@ import {
   TableProps,
 } from "antd";
 import { useTranslation } from "react-i18next";
-import { AnnualTrackingData, CalculationResult } from "../../../models/CalculationResult";
-import { BITCOIN_COLOR, toUsd } from "../../../constants";
+import { MonthlyTrackingData, CalculationResult } from "../../../models/CalculationResult";
+import { BITCOIN_COLOR, toThb } from "../../../constants";
 import { useState } from "react";
 import { SettingOutlined } from "@ant-design/icons";
 import "./TableTab.scss";
@@ -17,11 +17,11 @@ import "./TableTab.scss";
 const TableTab = ({ dataSet }: CalculationResult) => {
   const [t] = useTranslation();
 
-  const columns: TableProps<AnnualTrackingData>["columns"] = [
+  const columns: TableProps<MonthlyTrackingData>["columns"] = [
     {
-      title: t("table.year"),
+      title: t("table.period"),
       dataIndex: "key",
-      width: "5rem",
+      width: "7rem",
       key: "key",
     },
     {
@@ -35,14 +35,21 @@ const TableTab = ({ dataSet }: CalculationResult) => {
       dataIndex: "bitcoinPrice",
       key: "bitcoinPrice",
       width: "10rem",
-      render: (n: number) => <span>{toUsd(n)}</span>,
+      render: (n: number) => <span>{toThb(n)}</span>,
+    },
+    {
+      title: t("table.monthly-buy-fiat"),
+      dataIndex: "monthlyBuyFiat",
+      key: "monthlyBuyFiat",
+      width: "10rem",
+      render: (n: number) => <span>{toThb(n)}</span>,
     },
     {
       title: t("table.accumulated-savings"),
       dataIndex: "savingsFiat",
       key: "savingsFiat",
       width: "9rem",
-      render: (n: number) => (n === 0 ? <>{t("table.not-relevant")}</> : <span>{toUsd(n)}</span>),
+      render: (n: number) => (n === 0 ? <>{t("table.not-relevant")}</> : <span>{toThb(n)}</span>),
     },
     {
       title: t("table.accumulated-savings-btc"),
@@ -60,10 +67,10 @@ const TableTab = ({ dataSet }: CalculationResult) => {
     },
     {
       title: t("table.indexed-budget"),
-      dataIndex: "annualRetirementBudget",
+      dataIndex: "monthlyRetirementBudget",
       width: "9rem",
-      key: "annualRetirementBudget",
-      render: (n: number) => <span>{toUsd(n)}</span>,
+      key: "monthlyRetirementBudget",
+      render: (n: number) => <span>{toThb(n)}</span>,
     },
   ];
 

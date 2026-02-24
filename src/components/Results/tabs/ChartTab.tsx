@@ -5,7 +5,7 @@ interface ChartTabProps {
   bitcoinPrice: number;
   retirementAge: number;
   bitcoinPriceAtRetirement: number;
-  annualBudget: number;
+  monthlyBudget: number;
   totalSavings: number;
   chartProps: LineChartProps;
 }

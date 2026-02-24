@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { InputData } from "../../models/InputData";
-import { Slider, InputNumber, Switch, Popover } from "antd";
+import { Slider, InputNumber, Switch, Popover, Radio, Tooltip, Space, Segmented } from "antd";
 import "./InputPanel.scss";
 import { useTranslation } from "react-i18next";
-import { QuestionCircleTwoTone } from "@ant-design/icons";
+import { InfoCircleOutlined, QuestionCircleTwoTone } from "@ant-design/icons";
 import ExplanatoryOverlay from "./ExplanatoryOverlay";
 import { BITCOIN_COLOR, BITCOIN_SIGN } from "../../constants";
 import { useSearchParams } from "react-router-dom";
+import { ProjectionModel, SaylorCase, PowerLawCase } from "../../models/ProjectionModel";
 
 interface InputPanelProps {
   onCalculate: (data: InputData) => void;
@@ -22,8 +23,8 @@ const InputPanel = ({ onCalculate, clearChart }: InputPanelProps) => {
   const [currentSavings, setCurrentSavings] = useState<number>(
     parseFloat(searchParams.get("currentSavings") ?? "0.5"),
   );
-  const [annualBuy, setAnnualBuy] = useState<number>(
-    parseInt(searchParams.get("annualBuy") ?? "0"),
+  const [monthlyBuy, setMonthlyBuy] = useState<number>(
+    parseInt(searchParams.get("monthlyBuy") ?? "0"),
   );
   const [bitcoinCagr, setBitcoinPriceAnnualGrowth] = useState<number>(
     parseInt(searchParams.get("bitcoinCagr") ?? "20"),
@@ -32,7 +33,7 @@ const InputPanel = ({ onCalculate, clearChart }: InputPanelProps) => {
     parseInt(searchParams.get("lifeExpectancy") ?? "86"),
   );
   const [desiredRetirementIncome, setDesiredRetirementIncome] = useState<number>(
-    parseInt(searchParams.get("desiredRetirementIncome") ?? "120000"),
+    parseInt(searchParams.get("desiredRetirementIncome") ?? "25000"),
   );
   const [inflationRate, setInflationRate] = useState<number>(
     parseFloat(searchParams.get("inflationRate") ?? "2.0"),
@@ -40,10 +41,25 @@ const InputPanel = ({ onCalculate, clearChart }: InputPanelProps) => {
   const [optimized, setOptimized] = useState<boolean>(
     searchParams.get("optimized") == "false" ? false : true,
   );
+  const [projectionModel, setProjectionModel] = useState<ProjectionModel>(
+    (searchParams.get("projectionModel") as ProjectionModel) || ProjectionModel.CAGR,
+  );
+  const [saylorCase, setSaylorCase] = useState<SaylorCase>(
+    (searchParams.get("saylorCase") as SaylorCase) || SaylorCase.BASE,
+  );
+  const [powerLawCase, setPowerLawCase] = useState<PowerLawCase>(
+    (searchParams.get("powerLawCase") as PowerLawCase) || PowerLawCase.BASE,
+  );
+  const [increaseSavingsEveryYear, setIncreaseSavingsEveryYear] = useState<boolean>(
+    searchParams.get("increaseSavingsEveryYear") === "true",
+  );
+  const [savingsAnnualIncreaseRate, setSavingsAnnualIncreaseRate] = useState<number>(
+    parseInt(searchParams.get("savingsAnnualIncreaseRate") ?? "5"),
+  );
   const [t] = useTranslation();
-  const btcBuyMin: number = 0;
-  const btcBuyMax: number = 200000;
-  const btcBuyStep: number = 100;
+  const monthlyBuyMin: number = 0;
+  const monthlyBuyMax: number = 1000000;
+  const monthlyBuyStep: number = 100;
 
   useEffect(() => {
     initQueryString();
@@ -52,12 +68,17 @@ const InputPanel = ({ onCalculate, clearChart }: InputPanelProps) => {
   }, [
     currentAge,
     currentSavings,
-    annualBuy,
+    monthlyBuy,
     bitcoinCagr,
     lifeExpectancy,
     desiredRetirementIncome,
     inflationRate,
     optimized,
+    projectionModel,
+    saylorCase,
+    powerLawCase,
+    increaseSavingsEveryYear,
+    savingsAnnualIncreaseRate,
   ]);
 
   const initQueryString = () => {
@@ -65,11 +86,16 @@ const InputPanel = ({ onCalculate, clearChart }: InputPanelProps) => {
       currentAge: currentAge.toString(),
       lifeExpectancy: lifeExpectancy.toString(),
       currentSavings: currentSavings.toString(),
-      annualBuy: annualBuy.toString(),
+      monthlyBuy: monthlyBuy.toString(),
       bitcoinCagr: bitcoinCagr.toString(),
       desiredRetirementIncome: desiredRetirementIncome.toString(),
       inflationRate: inflationRate.toString(),
       optimized: optimized.toString(),
+      projectionModel: projectionModel,
+      saylorCase: saylorCase,
+      powerLawCase: powerLawCase,
+      increaseSavingsEveryYear: increaseSavingsEveryYear.toString(),
+      savingsAnnualIncreaseRate: savingsAnnualIncreaseRate.toString(),
     });
   };
 
@@ -79,16 +105,14 @@ const InputPanel = ({ onCalculate, clearChart }: InputPanelProps) => {
     }
     clearChart();
     setCurrentSavings(newValue);
-    setSearchParams({ currentSavings: newValue.toString() });
   };
 
-  const handleAnnualBuyChange = (newValue: number | null | undefined) => {
+  const handleMonthlyBuyChange = (newValue: number | null | undefined) => {
     if (newValue === undefined || newValue == null) {
       return;
     }
     clearChart();
-    setAnnualBuy(newValue);
-    setSearchParams({ annualBuy: newValue.toString() });
+    setMonthlyBuy(newValue);
   };
 
   const handleBitcoinPriceGrowthChange = (newValue: number | null | undefined) => {
@@ -97,7 +121,6 @@ const InputPanel = ({ onCalculate, clearChart }: InputPanelProps) => {
     }
     clearChart();
     setBitcoinPriceAnnualGrowth(newValue);
-    setSearchParams({ bitcoinCagr: newValue.toString() });
   };
 
   const handleInflationRateChange = (newValue: number | null | undefined) => {
@@ -106,7 +129,6 @@ const InputPanel = ({ onCalculate, clearChart }: InputPanelProps) => {
     }
     clearChart();
     setInflationRate(newValue);
-    setSearchParams({ inflationRate: newValue.toString() });
   };
 
   const handleDesiredRetirementIncomeChange = (newValue: number | null | undefined) => {
@@ -115,7 +137,6 @@ const InputPanel = ({ onCalculate, clearChart }: InputPanelProps) => {
     }
     clearChart();
     setDesiredRetirementIncome(newValue);
-    setSearchParams({ desiredRetirementIncome: newValue.toString() });
   };
 
   const handleCurrentAgeChange = (newValue: number | null | undefined) => {
@@ -125,7 +146,6 @@ const InputPanel = ({ onCalculate, clearChart }: InputPanelProps) => {
     clearChart();
     if (newValue <= lifeExpectancy) {
       setCurrentAge(newValue);
-      setSearchParams({ currentAge: newValue.toString() });
     }
   };
   const handleLifeExpectancyChange = (newValue: number | null | undefined) => {
@@ -135,53 +155,113 @@ const InputPanel = ({ onCalculate, clearChart }: InputPanelProps) => {
     clearChart();
     if (newValue > currentAge) {
       setLifeExpectancy(newValue);
-      setSearchParams({ lifeExpectancy: newValue.toString() });
     }
   };
   const handleOptimizedSwitchChange = (checked: boolean) => {
     setOptimized(checked);
-    setSearchParams({ optimized: checked.toString() });
+  };
+  const handleProjectionModelChange = (value: ProjectionModel) => {
+    setProjectionModel(value);
+    clearChart();
+  };
+  const handleSaylorCaseChange = (value: SaylorCase) => {
+    setSaylorCase(value);
+    clearChart();
+  };
+  const handlePowerLawCaseChange = (value: PowerLawCase) => {
+    setPowerLawCase(value);
+    clearChart();
+  };
+  const handleIncreaseSavingsYearlyChange = (checked: boolean) => {
+    setIncreaseSavingsEveryYear(checked);
+    clearChart();
+  };
+  const handleSavingsAnnualIncreaseRateChange = (newValue: number | null | undefined) => {
+    if (newValue === undefined || newValue == null) {
+      return;
+    }
+    clearChart();
+    setSavingsAnnualIncreaseRate(newValue);
   };
   const calculate = () => {
     onCalculate({
       currentAge,
       currentSavingsInBitcoin: currentSavings,
-      annualBuyInFiat: annualBuy,
+      monthlyBuyInFiat: monthlyBuy,
       annualPriceGrowth: bitcoinCagr,
       lifeExpectancy: lifeExpectancy,
-      desiredRetirementAnnualBudget: desiredRetirementIncome,
+      desiredRetirementMonthlyBudget: desiredRetirementIncome,
       optimized: optimized,
       inflationRate: inflationRate,
+      projectionModel,
+      saylorCase,
+      powerLawCase,
+      increaseSavingsEveryYear,
+      savingsAnnualIncreaseRate,
     });
+  };
+
+  const fromSliderValue = (v: number) => {
+    if (v <= 0) return 0;
+    let val = 0;
+    let step = 10;
+
+    if (v <= 25) {
+      val = Math.pow(10, 1 + (v / 25) * 2);
+      step = 10;
+    } else if (v <= 50) {
+      val = Math.pow(10, 3 + (v - 25) / 25);
+      step = 100;
+    } else if (v <= 75) {
+      val = Math.pow(10, 4 + (v - 50) / 25);
+      step = 1000;
+    } else {
+      val = Math.pow(10, 5 + (v - 75) / 25);
+      step = 10000;
+    }
+
+    return Math.round(val / step) * step;
+  };
+
+  const toSliderValue = (v: number) => {
+    if (v <= 0) return 0;
+    if (v <= 1000) {
+      return ((Math.log10(Math.max(10, v)) - 1) / 2) * 25;
+    } else if (v <= 10000) {
+      return 25 + (Math.log10(v) - 3) * 25;
+    } else if (v <= 100000) {
+      return 50 + (Math.log10(v) - 4) * 25;
+    } else {
+      return 75 + (Math.log10(Math.min(1000000, v)) - 5) * 25;
+    }
   };
 
   return (
     <div className="input-panel">
-      <div className="input-panel__inputs">
-        <div className="input-panel__inputs control">
+      <div className="input-panel__zone-top">
+        <div className="control">
           <label htmlFor="currentAge">{t("input.current-age")}</label>
           <InputNumber
             className="input"
-            type="number"
-            name="currentAge"
             min={0}
-            max={150}
+            max={lifeExpectancy}
+            name="currentAge"
             value={currentAge}
             onChange={handleCurrentAgeChange}
           />
         </div>
-        <div className="input-panel__inputs control">
+        <div className="control">
           <label htmlFor="lifeExpectancy">{t("input.life-expectancy")}</label>
           <InputNumber
             className="input"
-            type="number"
-            min={0}
+            min={currentAge}
+            max={100}
             name="lifeExpectancy"
             value={lifeExpectancy}
             onChange={handleLifeExpectancyChange}
           />
         </div>
-        <div className="input-panel__inputs control">
+        <div className="control">
           <label htmlFor="currentSavings">{t("input.savings-btc")}</label>
           <InputNumber
             className="input"
@@ -193,34 +273,97 @@ const InputPanel = ({ onCalculate, clearChart }: InputPanelProps) => {
             onChange={handleCurrentSavingsChange}
           />
         </div>
-        <div className="input-panel__inputs control">
-          <label htmlFor="annualBuy">{t("input.annual-buy")}</label>
+        <div className="control">
+          <label htmlFor="monthlyBuy">{t("input.monthly-buy")}</label>
           <InputNumber
-            name="annualBuy"
+            name="monthlyBuy"
             className="input"
-            step={btcBuyStep}
-            min={btcBuyMin}
-            max={btcBuyMax}
-            value={annualBuy}
-            addonAfter="$"
-            onChange={handleAnnualBuyChange}
+            step={monthlyBuyStep}
+            min={monthlyBuyMin}
+            max={monthlyBuyMax}
+            value={monthlyBuy}
+            addonAfter="THB"
+            onChange={handleMonthlyBuyChange}
           />
+          <div className="slider-wrapper">
+            <Slider
+              marks={{
+                0: "฿0",
+                25: "฿1K",
+                50: "฿10K",
+                75: "฿100K",
+                100: "฿1M",
+              }}
+              step={0.01}
+              tooltip={{
+                color: BITCOIN_COLOR,
+                open: false,
+                formatter: (v) => `฿${fromSliderValue(v ?? 0).toLocaleString()}`,
+              }}
+              max={100}
+              min={0}
+              onChange={(v) => handleMonthlyBuyChange(fromSliderValue(v))}
+              value={toSliderValue(monthlyBuy)}
+            />
+          </div>
+          <div className="sub-control">
+            <Switch
+              size="small"
+              checked={increaseSavingsEveryYear}
+              onChange={handleIncreaseSavingsYearlyChange}
+            />
+            <span style={{ marginLeft: 8, fontSize: "0.85rem" }}>
+              {t("input.increase-savings-yearly")}
+            </span>
+          </div>
+          {increaseSavingsEveryYear && (
+            <div className="sub-control-input">
+              <label style={{ fontSize: "0.8rem", color: "#666" }}>
+                {t("input.annual-increase-rate")}
+              </label>
+              <InputNumber
+                size="small"
+                min={0}
+                max={100}
+                step={1}
+                value={savingsAnnualIncreaseRate}
+                addonAfter="%"
+                onChange={handleSavingsAnnualIncreaseRateChange}
+                style={{ width: "100px", marginTop: "4px" }}
+              />
+            </div>
+          )}
         </div>
-        <div className="input-panel__inputs control">
-          <label htmlFor="growthRate">{t("input.growth-rate")}</label>
+        <div className="control">
+          <label htmlFor="desiredRetirementIncome">
+            {t("input.desired-monthly-income")}
+            <Tooltip title={t("input.desired-monthly-income-tooltip")}>
+              <QuestionCircleTwoTone
+                twoToneColor={BITCOIN_COLOR}
+                style={{ marginLeft: 8, cursor: "help" }}
+              />
+            </Tooltip>
+          </label>
           <InputNumber
+            className="input"
             type="number"
-            className="input"
-            name="growthRate"
-            addonAfter={"%"}
+            addonAfter="THB"
             min={0}
-            max={100}
-            value={bitcoinCagr}
-            onChange={handleBitcoinPriceGrowthChange}
+            name="desiredRetirementIncome"
+            value={desiredRetirementIncome}
+            onChange={handleDesiredRetirementIncomeChange}
           />
         </div>
-        <div className="input-panel__inputs control">
-          <label htmlFor="inflationRate">{t("input.inflation-rate")}</label>
+        <div className="control">
+          <label htmlFor="inflationRate">
+            {t("input.inflation-rate")}
+            <Tooltip title={t("input.inflation-rate-tooltip")}>
+              <QuestionCircleTwoTone
+                twoToneColor={BITCOIN_COLOR}
+                style={{ marginLeft: 8, cursor: "help" }}
+              />
+            </Tooltip>
+          </label>
           <InputNumber
             type="number"
             className="input"
@@ -229,54 +372,113 @@ const InputPanel = ({ onCalculate, clearChart }: InputPanelProps) => {
             addonAfter={"%"}
             step={0.1}
             min={0}
-            max={bitcoinCagr}
+            max={projectionModel === ProjectionModel.CAGR ? bitcoinCagr : 100}
             value={inflationRate}
             onChange={handleInflationRateChange}
           />
         </div>
-        <div className="input-panel__inputs control">
-          <label htmlFor="desiredRetirementIncome">{t("input.desired-total-savings")}</label>
-          <InputNumber
-            className="input"
-            type="number"
-            addonAfter="$"
-            min={0}
-            name="desiredRetirementIncome"
-            value={desiredRetirementIncome}
-            onChange={handleDesiredRetirementIncomeChange}
-          />
-        </div>
       </div>
-      <div className="input-panel__sliders">
-        <div className="slider">
-          <Slider
-            marks={{
-              0: `$${btcBuyMin}`,
-              100000: t("slider.annual-buy"),
-              200000: `$200K`,
-            }}
-            step={btcBuyStep}
-            tooltip={{ color: BITCOIN_COLOR, open: true, placement: "top" }}
-            max={btcBuyMax}
-            onChange={handleAnnualBuyChange}
-            value={typeof annualBuy === "number" ? annualBuy : 0}
-          />
+
+      <hr className="divider" />
+
+      <div className="input-panel__zone-bottom">
+        <div className="model-selection">
+          <label className="section-title">{t("input.model.title")}</label>
+          <Radio.Group
+            onChange={(e) => handleProjectionModelChange(e.target.value)}
+            value={projectionModel}
+            className="model-radio-group"
+          >
+            <Space direction="vertical" style={{ width: "100%" }}>
+              <Radio value={ProjectionModel.CAGR}>
+                {t("input.model.cagr")}
+                <Tooltip title={t(`mode-explanation.model.cagr`)}>
+                  <InfoCircleOutlined style={{ marginLeft: 8, cursor: "help" }} />
+                </Tooltip>
+              </Radio>
+              <Radio value={ProjectionModel.S2F}>
+                {t("input.model.s2f")}
+                <Tooltip title={t(`mode-explanation.model.s2f`)}>
+                  <InfoCircleOutlined style={{ marginLeft: 8, cursor: "help" }} />
+                </Tooltip>
+              </Radio>
+              <Radio value={ProjectionModel.POWER_LAW}>
+                {t("input.model.power-law")}
+                <Tooltip title={t(`mode-explanation.model.power-law`)}>
+                  <InfoCircleOutlined style={{ marginLeft: 8, cursor: "help" }} />
+                </Tooltip>
+              </Radio>
+              <Radio value={ProjectionModel.SAYLOR_24}>
+                {t("input.model.saylor-24")}
+                <Tooltip title={t(`mode-explanation.model.saylor-24`)}>
+                  <InfoCircleOutlined style={{ marginLeft: 8, cursor: "help" }} />
+                </Tooltip>
+              </Radio>
+            </Space>
+          </Radio.Group>
         </div>
-        <div className="slider">
-          <Slider
-            marks={{
-              0: "0%",
-              50: t("slider.growth-rate"),
-              100: "100%",
-            }}
-            tooltip={{ color: BITCOIN_COLOR, open: true, placement: "top" }}
-            min={0}
-            max={100}
-            onChange={handleBitcoinPriceGrowthChange}
-            value={typeof bitcoinCagr === "number" ? bitcoinCagr : 0}
-          />
-        </div>
-        <div className="input-panel__sliders switch">
+
+        {projectionModel === ProjectionModel.SAYLOR_24 && (
+          <div className="model-sub-selection">
+            <Segmented
+              block
+              value={saylorCase}
+              onChange={(v) => handleSaylorCaseChange(v as SaylorCase)}
+              options={[
+                { label: t("input.model.saylor.bear"), value: SaylorCase.BEAR },
+                { label: t("input.model.saylor.base"), value: SaylorCase.BASE },
+                { label: t("input.model.saylor.bull"), value: SaylorCase.BULL },
+              ]}
+            />
+          </div>
+        )}
+
+        {projectionModel === ProjectionModel.POWER_LAW && (
+          <div className="model-sub-selection">
+            <Segmented
+              block
+              value={powerLawCase}
+              onChange={(v) => handlePowerLawCaseChange(v as PowerLawCase)}
+              options={[
+                { label: t("input.model.power-law-cases.worst"), value: PowerLawCase.WORST },
+                { label: t("input.model.power-law-cases.base"), value: PowerLawCase.BASE },
+                { label: t("input.model.power-law-cases.best"), value: PowerLawCase.BEST },
+              ]}
+            />
+          </div>
+        )}
+
+        {projectionModel === ProjectionModel.CAGR && (
+          <div className="control model-setting">
+            <label htmlFor="growthRate">{t("input.growth-rate")}</label>
+            <InputNumber
+              type="number"
+              className="input"
+              name="growthRate"
+              addonAfter={"%"}
+              min={0}
+              max={100}
+              value={bitcoinCagr}
+              onChange={handleBitcoinPriceGrowthChange}
+            />
+            <div className="slider-wrapper">
+              <Slider
+                marks={{
+                  0: "0%",
+                  50: t("slider.growth-rate"),
+                  100: "100%",
+                }}
+                tooltip={{ color: BITCOIN_COLOR, open: false }}
+                min={0}
+                max={100}
+                onChange={handleBitcoinPriceGrowthChange}
+                value={typeof bitcoinCagr === "number" ? bitcoinCagr : 0}
+              />
+            </div>
+          </div>
+        )}
+
+        <div className="switch-wrapper">
           <span>{t("input.conservative")}</span>
           <Switch checked={optimized} onChange={handleOptimizedSwitchChange} />
           <span> {t("input.optimized")}</span>
@@ -289,6 +491,7 @@ const InputPanel = ({ onCalculate, clearChart }: InputPanelProps) => {
             <QuestionCircleTwoTone
               data-tooltip-id="my-tooltip-multiline"
               twoToneColor={BITCOIN_COLOR}
+              style={{ cursor: "pointer" }}
             />
           </Popover>
         </div>

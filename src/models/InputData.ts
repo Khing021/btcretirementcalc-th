@@ -1,10 +1,17 @@
+import { ProjectionModel, SaylorCase, PowerLawCase } from "./ProjectionModel";
+
 export interface InputData {
   currentAge: number;
   currentSavingsInBitcoin: number;
-  annualBuyInFiat: number;
+  monthlyBuyInFiat: number;
   annualPriceGrowth: number;
   lifeExpectancy: number;
-  desiredRetirementAnnualBudget: number;
+  desiredRetirementMonthlyBudget: number;
   inflationRate: number;
   optimized: boolean;
+  projectionModel: ProjectionModel;
+  saylorCase?: SaylorCase;
+  powerLawCase?: PowerLawCase;
+  increaseSavingsEveryYear: boolean;
+  savingsAnnualIncreaseRate: number;
 }

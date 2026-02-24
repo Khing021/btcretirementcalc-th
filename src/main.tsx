@@ -12,6 +12,7 @@ i18next
   .use(LanguageDetector)
   .init({
     resources,
+    lng: "th",
     fallbackLng: "en",
     interpolation: {
       escapeValue: false, // not needed for react as it escapes by default

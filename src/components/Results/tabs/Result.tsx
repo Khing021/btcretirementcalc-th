@@ -4,7 +4,7 @@ import ChartTab from "./ChartTab";
 import { LineChartProps } from "../../../models/LineChartProps";
 import { useTranslation } from "react-i18next";
 import TableTab from "./TableTab";
-import { AnnualTrackingData } from "../../../models/CalculationResult";
+import { MonthlyTrackingData } from "../../../models/CalculationResult";
 import Summary from "./Summary";
 import OptimizedSummary from "./OptimizedSummary";
 import CannotRetire from "./CannotRetire";
@@ -12,12 +12,16 @@ import CannotRetire from "./CannotRetire";
 type Props = {
   btcPrice: number;
   retirementAge: number;
-  annualBudget: number;
+  retirementMonth: number;
+  retirementYear: number;
+  monthlyBudget: number;
+  monthlyBudgetAtEnd: number;
   bitcoinPriceAtRetirement: number;
   savingsBitcoin: number;
   savingsFiat: number;
   chartData: LineChartProps;
-  tableData: AnnualTrackingData[];
+  priceChartData: LineChartProps | undefined;
+  tableData: MonthlyTrackingData[];
   optimized: boolean;
   canRetire: boolean;
 };
@@ -25,11 +29,15 @@ type Props = {
 const Result = ({
   btcPrice,
   retirementAge,
-  annualBudget,
+  retirementMonth,
+  retirementYear,
+  monthlyBudget,
+  monthlyBudgetAtEnd,
   bitcoinPriceAtRetirement,
   savingsBitcoin,
   savingsFiat,
   chartData,
+  priceChartData,
   tableData,
   optimized,
   canRetire,
@@ -45,7 +53,7 @@ const Result = ({
         <ChartTab
           bitcoinPrice={btcPrice!}
           retirementAge={retirementAge}
-          annualBudget={annualBudget}
+          monthlyBudget={monthlyBudget}
           bitcoinPriceAtRetirement={bitcoinPriceAtRetirement}
           totalSavings={savingsBitcoin}
           chartProps={chartData!}
@@ -60,7 +68,7 @@ const Result = ({
         <TableTab
           startingBitcoinPrice={btcPrice!}
           retirementAge={retirementAge}
-          annualRetirementBudget={annualBudget}
+          monthlyRetirementBudget={monthlyBudget}
           bitcoinPriceAtRetirementAge={bitcoinPriceAtRetirement}
           savingsFiat={savingsFiat}
           dataSet={tableData!}
@@ -69,6 +77,21 @@ const Result = ({
           canRetire={canRetire}
         />
       ),
+    },
+    {
+      key: "3",
+      label: t("calculator.price-chart-view"),
+      icon: <AreaChartOutlined />,
+      children: priceChartData ? (
+        <ChartTab
+          bitcoinPrice={btcPrice!}
+          retirementAge={retirementAge}
+          monthlyBudget={monthlyBudget}
+          bitcoinPriceAtRetirement={bitcoinPriceAtRetirement}
+          totalSavings={savingsBitcoin}
+          chartProps={priceChartData}
+        />
+      ) : null,
     },
   ];
   if (!canRetire) {
@@ -79,17 +102,23 @@ const Result = ({
       {optimized ? (
         <OptimizedSummary
           retirementAge={retirementAge}
+          retirementMonth={retirementMonth}
+          retirementYear={retirementYear}
           totalSavings={savingsBitcoin}
           bitcoinPriceAtRetirement={bitcoinPriceAtRetirement}
-          annualBudget={annualBudget}
+          monthlyBudget={monthlyBudget}
+          monthlyBudgetAtEnd={monthlyBudgetAtEnd}
           bitcoinPrice={btcPrice}
         ></OptimizedSummary>
       ) : (
         <Summary
           retirementAge={retirementAge}
+          retirementMonth={retirementMonth}
+          retirementYear={retirementYear}
           totalSavings={savingsBitcoin}
           bitcoinPriceAtRetirement={bitcoinPriceAtRetirement}
-          annualBudget={annualBudget}
+          monthlyBudget={monthlyBudget}
+          monthlyBudgetAtEnd={monthlyBudgetAtEnd}
           bitcoinPrice={btcPrice}
         ></Summary>
       )}

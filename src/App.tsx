@@ -1,8 +1,7 @@
 import { useTranslation } from "react-i18next";
 import "./App.scss";
 import Calculator from "./components/Calculator";
-import Donate from "./components/Misc/Donate";
-import { GithubOutlined, MoonOutlined, SunOutlined, TwitterOutlined } from "@ant-design/icons";
+import { GithubOutlined, MoonOutlined, SunOutlined } from "@ant-design/icons";
 import { ConfigProvider, Switch, theme } from "antd";
 import { useLayoutEffect, useState } from "react";
 import useLocalStorage from "use-local-storage";
@@ -51,23 +50,27 @@ function App() {
           </div>
           <Calculator />
           <div className="signature">
-            <span>by</span>
-            <a target="blank" href="https://github.com/pampeanodev">
-              @pampeanodev
-            </a>
-            <a target="blank" href="https://x.com/pampeanodev">
-              <TwitterOutlined width={10} />
-            </a>
-            <a
-              target="blank"
-              href="https://primal.net/p/npub16r9fy3936x9pf9sk020zt48ntpp809lk9xf5wldzhlqu7x8y3t9shy8j7x"
-            >
-              <img src="https://nostr.how/images/nostrich-150.webp" width={16} />
-            </a>
-            <a target="_blank" href="https://github.com/pampeanodev/btcretirementcalc">
-              <GithubOutlined width={10}></GithubOutlined>
-            </a>
-            <Donate></Donate>
+            <div className="signature-line disclaimer-line">
+              <span>{t("footer.disclaimer")}</span>
+            </div>
+            <div className="signature-line">
+              <span>{t("footer.originally-created-by")}</span>
+              <a target="blank" href="https://github.com/pampeanodev">
+                @pampeanodev
+              </a>
+              <a target="blank" href="https://calc.bitcoineracademy.com/">
+                (Bitcoiner Academy)
+              </a>
+            </div>
+            <div className="signature-line support-line">
+              <span>{t("footer.support-original")}</span>
+            </div>
+            <div className="signature-line">
+              <span>{t("footer.adapted-by")} ขิงว่านะ</span>
+              <a target="_blank" href="https://github.com/kssir/btcretirementcalc-th">
+                <GithubOutlined className="github-logo" />
+              </a>
+            </div>
           </div>
         </div>
       </ConfigProvider>
