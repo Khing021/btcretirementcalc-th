@@ -8,6 +8,8 @@ import ExplanatoryOverlay from "./ExplanatoryOverlay";
 import { BITCOIN_COLOR, BITCOIN_SIGN } from "../../constants";
 import { useSearchParams } from "react-router-dom";
 import { ProjectionModel, SaylorCase, PowerLawCase } from "../../models/ProjectionModel";
+import AnnualSavingsExplanation from "./AnnualSavingsExplanation";
+
 
 interface InputPanelProps {
   onCalculate: (data: InputData) => void;
@@ -315,6 +317,7 @@ const InputPanel = ({ onCalculate, clearChart }: InputPanelProps) => {
             <span style={{ marginLeft: 8, fontSize: "0.85rem" }}>
               {t("input.increase-savings-yearly")}
             </span>
+            <AnnualSavingsExplanation />
           </div>
           {increaseSavingsEveryYear && (
             <div className="sub-control-input">

@@ -37,7 +37,7 @@ function App() {
           <div>
             <div className="title">
               <div>
-                <img src="./bitcoin-logo2.png" width="40px"></img>
+                <img src="bitcoin-logo2.png" width="40px"></img>
               </div>
               <span>{t("app.title")}</span>
               <Switch

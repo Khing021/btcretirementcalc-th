@@ -1,8 +1,9 @@
 import InfoBox from "../InfoBox";
 import { toBtc, toThb } from "../../../constants";
 import { useTranslation } from "react-i18next";
-import AnnualBudgetExplanation from "./AnnualBudgetExplanation";
+import EndLifeBudgetExplanation from "./EndLifeBudgetExplanation";
 import FirstMonthBudgetExplanation from "./FirstMonthBudgetExplanation";
+
 
 type Props = {
   bitcoinPrice: number;
@@ -65,9 +66,10 @@ const OptimizedSummary = ({
             value={toThb(monthlyBudgetAtEnd)}
             type="info"
           />
-          <AnnualBudgetExplanation />
+          <EndLifeBudgetExplanation />
         </div>
       </div>
+
     </div>
   );
 };
